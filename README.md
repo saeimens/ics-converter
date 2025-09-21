@@ -1,3 +1,6 @@
+![ICS Converter Banner](banner.png)
+
+
 ICS Converter for Abacus ERP
 A simple web application built to solve a specific problem: converting .ics calendar files exported from the Abacus ERP system into a format that is fully compatible with Google Calendar.
 
