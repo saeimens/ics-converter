@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICS Konverter</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .container { background-color: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); text-align: center; max-width: 550px; width: 90%; position: relative; }
+        .lang-switcher { position: absolute; top: 15px; right: 15px; }
+        .lang-btn { background: none; border: none; cursor: pointer; font-weight: bold; color: #aaa; padding: 5px; }
+        .lang-btn.active { color: #1877f2; text-decoration: underline; }
+        h1 { color: #1c1e21; margin-bottom: 20px; }
+        p { color: #606770; margin-bottom: 30px; }
+        .upload-btn-wrapper { position: relative; overflow: hidden; display: inline-block; cursor: pointer; margin-bottom: 20px;}
+        .btn { border: 2px solid #1877f2; color: #1877f2; background-color: white; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: bold; transition: all 0.2s ease-in-out; }
+        .btn:hover { background-color: #1877f2; color: white; }
+        .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
+        #fileName { margin-top: 15px; color: #333; font-style: italic; min-height: 20px; }
+        .guide { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: left;}
+        .guide h3 { font-size: 16px; color: #1c1e21; margin-bottom: 15px; }
+        .guide ol { padding-left: 20px; color: #606770; }
+        .guide li { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lang-switcher">
+            <button id="lang-de" class="lang-btn active">DE</button> |
+            <button id="lang-fr" class="lang-btn">FR</button> |
+            <button id="lang-it" class="lang-btn">IT</button> |
+            <button id="lang-en" class="lang-btn">EN</button>
+        </div>
+
+        <h1 id="title">ICS Kalender Konverter</h1>
+        <p id="description">Konvertiert eine Abaplan .ics-Datei in ein Format, das mit Google Kalender kompatibel ist.</p>
+
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+            <div class="upload-btn-wrapper">
+                <button class="btn" type="button" id="upload-btn">.ics-Datei auswählen</button>
+                <input type="file" name="file" id="fileInput" accept=".ics,text/calendar" />
+            </div>
+            <p id="fileName"></p>
+        </form>
+
+        <div class="guide">
+            <h3 id="guide-title">Anleitung</h3>
+            <ol>
+                <li id="step1"><strong>Aus Abacus exportieren:</strong> Exportieren Sie Ihren Arbeitsplan als <code>.ics</code>-Datei aus dem Abacus-Portal.</li>
+                <li id="step2"><strong>Datei konvertieren:</strong> Klicken Sie oben auf die Schaltfläche und wählen Sie die gerade heruntergeladene Datei aus. Die Konvertierung erfolgt automatisch.</li>
+                <li id="step3"><strong>In Ihren Kalender importieren:</strong> Eine neue Datei namens <code>google_compatible_calendar.ics</code> wird heruntergeladen. Importieren Sie diese neue Datei in Ihren Google Kalender.</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            'de': {
+                'title': 'ICS Kalender Konverter',
+                'description': 'Konvertiert eine Abaplan .ics-Datei in ein Format, das mit Google Kalender kompatibel ist.',
+                'upload-btn': '.ics-Datei auswählen',
+                'converting': 'Konvertiere...',
+                'guide-title': 'Anleitung',
+                'step1': '<strong>Aus Abacus exportieren:</strong> Exportieren Sie Ihren Arbeitsplan als <code>.ics</code>-Datei aus dem Abacus-Portal.',
+                'step2': '<strong>Datei konvertieren:</strong> Klicken Sie oben auf die Schaltfläche und wählen Sie die gerade heruntergeladene Datei aus. Die Konvertierung erfolgt automatisch.',
+                'step3': '<strong>In Ihren Kalender importieren:</strong> Eine neue Datei namens <code>google_compatible_calendar.ics</code> wird heruntergeladen. Importieren Sie diese neue Datei in Ihren Google Kalender.'
+            },
+            'fr': {
+                'title': 'Convertisseur de Calendrier ICS',
+                'description': 'Convertit un fichier .ics Abaplan en un format compatible avec Google Agenda.',
+                'upload-btn': 'Sélectionner le fichier .ics',
+                'converting': 'Conversion en cours...',
+                'guide-title': 'Mode d\'emploi',
+                'step1': '<strong>Exporter depuis Abacus :</strong> Exportez votre horaire de travail en tant que fichier <code>.ics</code> depuis le portail Abacus.',
+                'step2': '<strong>Convertir le fichier :</strong> Cliquez sur le bouton ci-dessus et choisissez le fichier que vous venez de télécharger. La conversion se fait automatiquement.',
+                'step3': '<strong>Importer dans votre calendrier :</strong> Un nouveau fichier nommé <code>google_compatible_calendar.ics</code> sera téléchargé. Importez ce nouveau fichier dans votre Google Agenda.'
+            },
+            'it': {
+                'title': 'Convertitore di Calendario ICS',
+                'description': 'Converte un file .ics Abaplan in un formato compatibile con Google Calendar.',
+                'upload-btn': 'Seleziona file .ics',
+                'converting': 'Conversione in corso...',
+                'guide-title': 'Come usare',
+                'step1': '<strong>Esporta da Abacus:</strong> Esporta il tuo orario di lavoro come file <code>.ics</code> dal portale Abacus.',
+                'step2': '<strong>Converti il file:</strong> Clicca sul pulsante qui sopra e scegli il file che hai appena scaricato. La conversione avviene automaticamente.',
+                'step3': '<strong>Importa nel tuo calendario:</strong> Verrà scaricato un nuovo file chiamato <code>google_compatible_calendar.ics</code>. Importa questo nuovo file nel tuo Google Calendar.'
+            },
+            'en': {
+                'title': 'ICS Calendar Converter',
+                'description': 'Converts an Abaplan .ics file into a format compatible with Google Calendar.',
+                'upload-btn': 'Select .ics File',
+                'converting': 'Converting...',
+                'guide-title': 'How to Use',
+                'step1': '<strong>Export from Abacus:</strong> Export your work schedule as an <code>.ics</code> file from the Abacus portal.',
+                'step2': '<strong>Convert the file:</strong> Click the button above and choose the file you just downloaded. The conversion happens automatically.',
+                'step3': '<strong>Import to your calendar:</strong> A new file named <code>google_compatible_calendar.ics</code> will download. Import this new file into your Google Calendar.'
+            }
+        };
+
+        const setLanguage = (lang) => {
+            document.documentElement.lang = lang;
+            document.getElementById('title').textContent = translations[lang]['title'];
+            document.getElementById('description').textContent = translations[lang]['description'];
+            document.getElementById('upload-btn').textContent = translations[lang]['upload-btn'];
+            document.getElementById('guide-title').textContent = translations[lang]['guide-title'];
+            document.getElementById('step1').innerHTML = translations[lang]['step1'];
+            document.getElementById('step2').innerHTML = translations[lang]['step2'];
+            document.getElementById('step3').innerHTML = translations[lang]['step3'];
+
+            document.getElementById('lang-de').classList.toggle('active', lang === 'de');
+            document.getElementById('lang-fr').classList.toggle('active', lang === 'fr');
+            document.getElementById('lang-it').classList.toggle('active', lang === 'it');
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+        };
+
+        document.getElementById('lang-de').addEventListener('click', () => setLanguage('de'));
+        document.getElementById('lang-fr').addEventListener('click', () => setLanguage('fr'));
+        document.getElementById('lang-it').addEventListener('click', () => setLanguage('it'));
+        document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+
+        const fileInput = document.getElementById('fileInput');
+        const uploadForm = document.getElementById('uploadForm');
+        const fileNameDisplay = document.getElementById('fileName');
+        const uploadBtn = document.getElementById('upload-btn');
+
+        uploadBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                const lang = document.documentElement.lang || 'de';
+                fileNameDisplay.textContent = translations[lang]['converting'];
+                uploadForm.submit();
+            }
+        });
+
+        // Initialize with default language
+        setLanguage('de');
+    </script>
+</body>
+</html>
+
